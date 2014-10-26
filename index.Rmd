@@ -3,7 +3,7 @@ title       : Bootstrapping
 subtitle    : to estimate population statistics
 author      : Mark Mo
 job         : 
-framework   : shower        # {io2012, html5slides, shower, dzslides, ...}
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
 highlighter : highlight.js  # {highlight.js, prettify, highlight}
 hitheme     : tomorrow      # 
 widgets     : [bootstrap, mathjax, shiny, interactive]            # {mathjax, quiz, bootstrap}
@@ -14,11 +14,14 @@ knit        : slidify::knit2slides
 
 ## What is bootstrapping?
 
-* "To pull oneself up by one's bootstraps"
+_"To pull oneself up by one's bootstraps"_
+
+* The seemingly impossible task of extracting more information from the same data set
 * A goal of inferential statistics is to determine the value of a parameter of a population, such as the mean or median
-* If we can't make assumptions about the shape of the population, all we have is the sample data
-* Instead, lets resample from the original sample (with replacement) and learn from that
-* This seems impossible to learn more information from the same set of data, but it works
+* What if we can't make assumptions about the shape of the population distribution and only one sample exists
+* Bootstrapping treats the original sample as a mini population from which to draw many (simulated) samples and therefore enable a confidence interval to be calculated
+* However, the technique can be counterintuitive
+* The aim of the [Bootstrap Demo App](https://markmo.shinyapps.io/bootstrapdemo/) is to help acquire the intuition
 
 ---
 
@@ -27,40 +30,36 @@ knit        : slidify::knit2slides
 * Bootstrapping involves a relatively simple procedure, but repeated so many times that using a computer to perform the calculations is necessary
 * A new sample of a given size is selected from the original sample with replacement
 * This is repeated many times to generate a distribution of the sample statistic
-* A confidence interval of the estimated parameter can be obtained from this distribution using the formula:
+* A confidence interval of the estimated parameter can be obtained from this distribution using the standard formula:
 
 $$\bar x_b \pm z * SE_b$$
 
+where \\(\bar x\\) is the mean of the bootstrap distribution, \\(z\\) is the relevant z-statistic for the confidence level, and \\(SE_b\\) is the standard error of the bootstrap distribution
+
 ---
 
-## The Bootstrapping Demo App
+## Bootstrapping example
 
-```{r opts.label="shiny"}
-slidifyUI(
-  
-  # Sidebar with a slider input for number of bins
-  sidebarPanel(
-    sliderInput("sample_size",
-                "Sample size:",
-                min = 1,
-                max = 50,
-                value = 30)
-  ),
-  
-  # Show a plot of the generated distribution
-  mainPanel(
-    showOutput("myChart", "polycharts")
-  )
-)
+* The following R code produces a 95% confidence interval for the estimate of the population mean from sample data using the bootstrapping technique:
+
+```{r}
+  mock_housing_prices <- sample(50000:100000, 300)
+  sample_size <- 50; num_simulations <- 50
+  sample_means <<- rep(NA, num_simulations)
+  for (i in 1:num_simulations) {
+    s <- sample(mock_housing_prices, sample_size, replace=TRUE)
+    sample_means[i] <- mean(s)
+  }
+  boot_mean <- mean(sample_means)
+  boot_se <- sd(sample_means) / sqrt(sample_size)
+  boot_ci_95 <- boot_mean + c(-1, 1) * 1.96 * boot_se
+  boot_ci_95
 ```
 
 ---
 
-* This Shiny App was developed as a demonstration to help acquire the intuition of what the procedure is doing
-* https://markmo.shinyapps.io/bootstrapdemo/
+## A Histogram of the previous example
 
-
-
-
-
-
+```{r r simple-plot, fig.height = 6, fig.align = 'center', message = F}
+hist(sample_means)
+```
