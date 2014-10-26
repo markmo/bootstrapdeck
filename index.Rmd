@@ -1,0 +1,66 @@
+---
+title       : Bootstrapping
+subtitle    : to estimate population statistics
+author      : Mark Mo
+job         : 
+framework   : shower        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : [bootstrap, mathjax, shiny, interactive]            # {mathjax, quiz, bootstrap}
+ext_widgets : {rCharts: "libraries/polycharts"}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## What is bootstrapping?
+
+* "To pull oneself up by one's bootstraps"
+* A goal of inferential statistics is to determine the value of a parameter of a population, such as the mean or median
+* If we can't make assumptions about the shape of the population, all we have is the sample data
+* Instead, lets resample from the original sample (with replacement) and learn from that
+* This seems impossible to learn more information from the same set of data, but it works
+
+---
+
+## Computer Science + Statistics = Data Science?
+
+* Bootstrapping involves a relatively simple procedure, but repeated so many times that using a computer to perform the calculations is necessary
+* A new sample of a given size is selected from the original sample with replacement
+* This is repeated many times to generate a distribution of the sample statistic
+* A confidence interval of the estimated parameter can be obtained from this distribution using the formula:
+
+$$\bar x_b \pm z * SE_b$$
+
+---
+
+## The Bootstrapping Demo App
+
+```{r opts.label="shiny"}
+slidifyUI(
+  
+  # Sidebar with a slider input for number of bins
+  sidebarPanel(
+    sliderInput("sample_size",
+                "Sample size:",
+                min = 1,
+                max = 50,
+                value = 30)
+  ),
+  
+  # Show a plot of the generated distribution
+  mainPanel(
+    showOutput("myChart", "polycharts")
+  )
+)
+```
+
+---
+
+* This Shiny App was developed as a demonstration to help acquire the intuition of what the procedure is doing
+* https://markmo.shinyapps.io/bootstrapdemo/
+
+
+
+
+
+
